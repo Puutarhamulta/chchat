@@ -12,6 +12,8 @@ import javax.swing.SwingConstants;
 import javax.swing.JButton;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class Login extends JFrame {
 
@@ -19,14 +21,21 @@ public class Login extends JFrame {
 	 * Create the frame.
 	 */
 	public Login() {
-		
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName() );
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		//Onödiga catch
-		
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedLookAndFeelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
 		setResizable(false);
 		setTitle("Login");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -68,16 +77,34 @@ public class Login extends JFrame {
 		contentPane.add(lblPort);
 		
 		JButton btnLogin = new JButton("Login");
+		btnLogin.addActionListener(new ActionListener() {
+			
+				public void actionPerformed(ActionEvent e) {
+					System.out.println("login knapp");
+					String name = txtName.getText();
+					String address = txtIpAddress.getText();
+					int port = Integer.parseInt(txtPort.getText());
+					login(name, address, port);
+				}
+
+		});
 		btnLogin.setBounds(44, 236, 117, 25);
 		contentPane.add(btnLogin);
 	}
 	
+	private void login(String name, String address, int port) {
+		dispose();
+		System.out.println("Name: "+ name + " Address: "+address+" Port: "+port);
+		
+	}
 	private JPanel contentPane;
 	private JTextField txtName;
 	private JTextField txtIpAddress;
 	private JLabel lblIpAddress;
 	private JTextField txtPort;
 	private JLabel lblPort;
+	
+	private LoginButton handle = new LoginButton();
 
 	/**
 	 * Launch the application.
