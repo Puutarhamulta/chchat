@@ -103,8 +103,6 @@ public class Login extends JFrame {
 	private JLabel lblIpAddress;
 	private JTextField txtPort;
 	private JLabel lblPort;
-	
-	private LoginButton handle = new LoginButton();
 
 	/**
 	 * Launch the application.
