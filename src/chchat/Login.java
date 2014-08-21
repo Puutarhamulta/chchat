@@ -19,14 +19,21 @@ public class Login extends JFrame {
 	 * Create the frame.
 	 */
 	public Login() {
-		
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName() );
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		//Onödiga catch
-		
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedLookAndFeelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
 		setResizable(false);
 		setTitle("Login");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
