@@ -14,6 +14,8 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class Login extends JFrame {
 
@@ -46,7 +48,7 @@ public class Login extends JFrame {
 		contentPane.setLayout(null);
 		
 		txtName = new JTextField();
-		txtName.setText("name");
+		txtName.setText("egu");
 		txtName.setBounds(32, 39, 140, 25);
 		contentPane.add(txtName);
 		txtName.setColumns(10);
@@ -57,7 +59,7 @@ public class Login extends JFrame {
 		contentPane.add(lblName);
 		
 		txtIpAddress = new JTextField();
-		txtIpAddress.setText("IP Address");
+		txtIpAddress.setText("192.161.0.1");
 		txtIpAddress.setColumns(10);
 		txtIpAddress.setBounds(32, 103, 140, 25);
 		contentPane.add(txtIpAddress);
@@ -67,7 +69,7 @@ public class Login extends JFrame {
 		contentPane.add(lblIpAddress);
 		
 		txtPort = new JTextField();
-		txtPort.setText("port");
+		txtPort.setText("420");
 		txtPort.setColumns(10);
 		txtPort.setBounds(32, 167, 140, 25);
 		contentPane.add(txtPort);
@@ -77,10 +79,20 @@ public class Login extends JFrame {
 		contentPane.add(lblPort);
 		
 		JButton btnLogin = new JButton("Login");
+		btnLogin.addKeyListener(new KeyAdapter() {
+			
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER){
+					String name = txtName.getText();
+					String address = txtIpAddress.getText();
+					int port = Integer.parseInt(txtPort.getText());
+					login(name, address, port);
+				}
+			}
+		});
 		btnLogin.addActionListener(new ActionListener() {
 			
 				public void actionPerformed(ActionEvent e) {
-					System.out.println("login knapp");
 					String name = txtName.getText();
 					String address = txtIpAddress.getText();
 					int port = Integer.parseInt(txtPort.getText());
@@ -90,11 +102,13 @@ public class Login extends JFrame {
 		});
 		btnLogin.setBounds(44, 236, 117, 25);
 		contentPane.add(btnLogin);
+		btnLogin.requestFocusInWindow();
 	}
 	
 	private void login(String name, String address, int port) {
 		dispose();
 		System.out.println("Name: "+ name + " Address: "+address+" Port: "+port);
+		Client client = new Client(name, address, port);
 		
 	}
 	private JPanel contentPane;
