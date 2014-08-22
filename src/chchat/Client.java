@@ -60,14 +60,15 @@ public class Client extends JFrame {
 		this.address = address;
 		this.port = port;
 		
+		createWindow();
+		
+		console("Attempting connection to: "+address+":"+port);
+		
 		boolean connect = openConnection(address, port);
 		if (!connect){
 			System.err.println("Connection failed");
 			console("Connection failed");
 		}
-		
-		createWindow();
-		console("Attempting connection to: "+address+":"+port);
 	}
 	
 	private boolean openConnection(String address, int port){
