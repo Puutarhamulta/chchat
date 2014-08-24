@@ -56,25 +56,30 @@ public class Client extends JFrame {
 	
 	public Client(String name, String address, int port) {
 		setTitle("ChChat");
+		//Här sparas serverns address och port (inte klientens)
 		this.name = name;
 		this.address = address;
 		this.port = port;
 		
-		createWindow();
-		
-		console("Attempting connection to: "+address+":"+port);
-		
-		boolean connect = openConnection(address, port);
+		boolean connect = openConnection(address);
 		if (!connect){
 			System.err.println("Connection failed");
 			console("Connection failed");
 		}
+		
+		createWindow();
+		
+		console("Attempting connection to: "+address+":"+port);
+		String beep = (name + " connected from "+address+":"+port);
+		send(beep.getBytes());
 	}
 	
-	private boolean openConnection(String address, int port){
+	private boolean openConnection(String address){
 
 		try {
-			socket = new DatagramSocket(port);
+			//Klienten kan inte använda samma port som servern, DatagramSocket() väljer en ledig port 
+			socket = new DatagramSocket();
+			//Obs! InetAddress (inte address)
 			ip = InetAddress.getByName(address);
 		} 
 		catch (UnknownHostException e) {
@@ -108,20 +113,6 @@ public class Client extends JFrame {
 		
 	}
 	
-	private void send(final byte[] data){
-		send = new Thread("Send"){
-			public void run(){
-				DatagramPacket packet = new DatagramPacket(data, data.length, ip, port);
-				try {
-					socket.send(packet);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		};
-		
-	}
 	private void createWindow(){	
 		
 		try {
@@ -210,8 +201,37 @@ public class Client extends JFrame {
 		if (message.equals("")) return;
 		message = name +": "+ message;
 		console(message);
-		
+		send(message.getBytes());
 		txtMessage.setText("");
+	}
+	private void send(final byte[] data){
+		System.out.println(data);
+		//Försöker göra en metod, inte thread
+		
+		System.out.println("sending packet");
+		DatagramPacket packet = new DatagramPacket(data, data.length, ip, port);
+		try {
+			socket.send(packet);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		/*
+		send = new Thread("Send"){
+			public void run(){
+				System.out.println("sending packet");
+				DatagramPacket packet = new DatagramPacket(data, data.length, ip, port);
+				try {
+					socket.send(packet);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+		*/
+		
 	}
 	
 	public void console(String message){

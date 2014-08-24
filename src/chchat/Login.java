@@ -59,7 +59,7 @@ public class Login extends JFrame {
 		contentPane.add(lblName);
 		
 		txtIpAddress = new JTextField();
-		txtIpAddress.setText("192.161.0.1");
+		txtIpAddress.setText("localhost");
 		txtIpAddress.setColumns(10);
 		txtIpAddress.setBounds(32, 103, 140, 25);
 		contentPane.add(txtIpAddress);
@@ -69,7 +69,7 @@ public class Login extends JFrame {
 		contentPane.add(lblIpAddress);
 		
 		txtPort = new JTextField();
-		txtPort.setText("420");
+		txtPort.setText("8192");
 		txtPort.setColumns(10);
 		txtPort.setBounds(32, 167, 140, 25);
 		contentPane.add(txtPort);
@@ -107,7 +107,7 @@ public class Login extends JFrame {
 	
 	private void login(String name, String address, int port) {
 		dispose();
-		System.out.println("Name: "+ name + " Address: "+address+" Port: "+port);
+		//System.out.println("Name: "+ name + " Address: "+address+" Port: "+port);
 		Client client = new Client(name, address, port);
 		
 	}
