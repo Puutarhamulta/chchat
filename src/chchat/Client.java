@@ -70,6 +70,10 @@ public class Client extends JFrame {
 		createWindow();
 		
 		console("Attempting connection to: "+address+":"+port);
+		/*
+		 * Skickar första paket till servern.
+		 * Strängen konverteras till byte och anropar send()
+		 */
 		String beep = (name + " connected from "+address+":"+port);
 		send(beep.getBytes());
 	}
@@ -204,20 +208,8 @@ public class Client extends JFrame {
 		send(message.getBytes());
 		txtMessage.setText("");
 	}
+	
 	private void send(final byte[] data){
-		System.out.println(data);
-		//Försöker göra en metod, inte thread
-		
-		System.out.println("sending packet");
-		DatagramPacket packet = new DatagramPacket(data, data.length, ip, port);
-		try {
-			socket.send(packet);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		/*
 		send = new Thread("Send"){
 			public void run(){
 				System.out.println("sending packet");
@@ -225,16 +217,23 @@ public class Client extends JFrame {
 				try {
 					socket.send(packet);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 		};
-		*/
+		//IGEN! Kom ihåg att starta threads
+		send.start();
+		
 		
 	}
 	
+	/*
+	 * consoleskickar stringen till history/"chat rutan" och går till next line
+	 * DOS & Windows: \r\n 0D0A (hex), 13,10 (decimal)
+	   Unix & Mac OS X: \n, 0A, 10
+	   Macintosh (OS 9): \r, 0D, 13
+	 */
 	public void console(String message){
-		history.append(message + "\n\r");
+		history.append(message + "\r\n");
 	}
 }
