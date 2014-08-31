@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -19,7 +21,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultCaret;
 
-public class ClientWindow extends JFrame{
+public class ClientWindow extends JFrame implements Runnable{
 	
 	/**
 	 * 
@@ -29,8 +31,9 @@ public class ClientWindow extends JFrame{
 	private JTextField txtMessage;
 	private JTextArea history;
 	private DefaultCaret caret;
-	
+	private Thread listen, run;
 	private Client client;
+	private boolean running = false;
 	
 	public ClientWindow(String name, String address, int port) {
 		setTitle("ChChat");
@@ -52,6 +55,10 @@ public class ClientWindow extends JFrame{
 		
 		String connection = ("/c/" + name);
 		client.send(connection.getBytes());
+		running = true;
+		run = new Thread(this, "Running");
+		run.start();
+		
 	}
 	
 private void createWindow(){	
@@ -106,7 +113,8 @@ private void createWindow(){
 		txtMessage.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER){
-					send(txtMessage.getText());
+					send(txtMessage.getText(), true);
+					
 				}
 			}
 		});
@@ -124,7 +132,7 @@ private void createWindow(){
 		JButton btnSend = new JButton("Send");
 		btnSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				send(txtMessage.getText());
+				send(txtMessage.getText(), true);
 			}
 		});
 		GridBagConstraints gbc_btnSend = new GridBagConstraints();
@@ -133,10 +141,52 @@ private void createWindow(){
 		gbc_btnSend.gridy = 2;
 		contentPane.add(btnSend, gbc_btnSend);
 		
+		addWindowListener(new WindowAdapter(){
+			public void windowClosing(WindowEvent e){
+				String disconnect = "/d/"+client.getID()+"/e/";
+				send(disconnect, false);
+				running = false;
+				client.close();
+				System.out.println("closed");
+			}
+		});
+		
+		
 		setVisible(true);
 		txtMessage.requestFocusInWindow();
 	}
-
+	
+	private void send(String message, boolean text){
+		txtMessage.requestFocusInWindow();
+		if (message.equals("")) return;
+		if (text) {
+			message = client.getName() +": "+ message;
+			message = "/m/" + message;
+		}
+		
+		client.send(message.getBytes());
+		txtMessage.setText("");
+	}
+	
+	public void listen(){
+		listen = new Thread(){
+			public void run(){
+				while (running){
+					String message = client.receive();
+					if (message.startsWith("/c/")){
+						client.setID(Integer.parseInt(message.split("/c/|/e/")[1]));
+						console("Successfully connected to server " + client.getID());
+					}
+					else if (message.startsWith("/m/")){
+						String m = message.split("/m/|/e/")[1];
+						console(m);
+					}
+				}
+			}
+		};
+		listen.start();
+	}
+	
 	/*
 	 * console skickar stringen till history/"chat rutan" och går till next line
 	 * DOS & Windows: \r\n 0D0A (hex), 13,10 (decimal)
@@ -146,15 +196,11 @@ private void createWindow(){
 	public void console(String message){
 		history.append(message + "\r\n");
 	}
-	
-	private void send(String message){
-		txtMessage.requestFocusInWindow();
-		if (message.equals("")) return;
-		message = client.getName() +": "+ message;
-		console(message);
-		message = "/m/" + message;
-		client.send(message.getBytes());
-		txtMessage.setText("");
+
+	@Override
+	public void run() {
+		listen();
+		
 	}
 	
 }

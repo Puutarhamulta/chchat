@@ -15,6 +15,8 @@ public class Client{
 	private DatagramSocket socket; //UDP socket
 	private InetAddress ip;
 	private Thread send;
+
+	private int ID = -1;
 	
 	public Client(String name, String address, int port){
 		this.name = name;
@@ -32,6 +34,17 @@ public class Client{
 	
 	public int getPort(){
 		return port;
+	}
+	public void setID(int id){
+		this.ID = id;
+	}
+	public int getID(){
+		return ID;
+	}
+	public void close(){
+		synchronized (socket) {
+			socket.close();
+		}
 	}
 	
 	boolean openConnection(String address){
@@ -70,7 +83,7 @@ public class Client{
 		send.start();	
 	}
 	//Originella sättet
-	private String receive(){
+	String receive(){
 		byte[] data = new byte[1024];
 		DatagramPacket packet = new DatagramPacket(data, data.length);
 		
@@ -80,7 +93,11 @@ public class Client{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		String message = new String(packet.getData());
+		if (message.startsWith("/c/")){
+			//this.ID =Integer.parseInt(message.substring(3, message.length()));
+		}
 		//console(message);
 		return message;
 	}

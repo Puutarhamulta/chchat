@@ -68,8 +68,8 @@ public class Server implements Runnable{
 					}
 					process(packet);
 					
-					clients.add(new ServerClient("egu", packet.getAddress(), packet.getPort(), 50));
-					System.out.println(clients.get(0).address.toString()+":"+ clients.get(0).port);
+					//clients.add(new ServerClient("egu", packet.getAddress(), packet.getPort(), 50));
+					//System.out.println(clients.get(0).address.toString()+":"+ clients.get(0).port);
 					
 				}
 			}
@@ -80,9 +80,15 @@ public class Server implements Runnable{
 	
 	private void sendToAll(String message){
 		for (int i = 0; i < clients.size(); i++){
+			//System.out.println("sending message to all: "+i);
 			ServerClient client = clients.get(i);
 			send(message.getBytes(), client.address, client.port);
 		}
+	}
+	
+	private void send(String message, InetAddress address, int port){
+		message += "/e/"; 
+		send(message.getBytes(), address, port);
 	}
 	
 	private void send(final byte[] data, final InetAddress address, final int port){
@@ -99,6 +105,7 @@ public class Server implements Runnable{
 		};
 		send.start();
 	}
+	
 	/*
 	 * Här processeras datan som kommit i paketet. /c/ för ny användare, /m/ för chat meddelande
 	 *  "/c/egu", med subtring som börjar på tredje tecknet till slutet av stringen finns namnet på användaren
@@ -116,13 +123,47 @@ public class Server implements Runnable{
 			System.out.println(" has connected to the server with ID: " + id);
 			clients.add(new ServerClient(
 					string.substring(3, string.length()), packet.getAddress(), packet.getPort(), id));
+			/*
+			for (int i = 0; i < clients.size(); i++){
+				System.out.print(clients.size()+"client: " + clients.get(i).name);
+			}
+			*/
+			String ID = "/c/"+id;
+			send(ID,packet.getAddress(),packet.getPort());
+			
 		} else if (string.startsWith("/m/")){
-			String message = string.substring(3, string.length());
-			System.out.println(string);
+			//String message = string.substring(3, string.length());
+			System.out.println("m paket: "+string);
 			sendToAll(string);
-		} else{
-			System.out.println(string);
+		} else if (string.startsWith("/d/")){
+			String id = string.split("/d/|/e/")[1];
+			disconnect(Integer.parseInt(id), true);
 		}
+		
+		else{
+			System.out.println("annat paket");
+		}
+		
+	}
+	private void disconnect(int id, boolean status){
+		ServerClient c = null;
+		
+		for (int i = 0; i < clients.size(); i++){
+			System.out.println("hepp");
+			if (clients.get(i).getID() == id) {
+				c = clients.get(i);
+				clients.remove(i);
+				break;
+			}
+		}
+		String message = "";
+		if (status){
+			message = "Client " + c.name + " (" + c.getID() + ") @ " + c.address.toString() + ":" + c.port + " disconnected.";
+		}
+		else {
+			message = "Client " + c.name + " (" + c.getID() + ") @ " + c.address.toString() + ":" + c.port + " timed out.";
+		}
+		System.out.println(message);
 	}
 }
 
