@@ -107,7 +107,7 @@ public class Server implements Runnable{
 	}
 	
 	/*
-	 * Här processeras datan som kommit i paketet. /c/ för ny användare, /m/ för chat meddelande
+	 * Här processeras datan som kommit i paketet. /c/ för ny användare, /m/ för chat meddelande, /d/ disconnect
 	 *  "/c/egu", med subtring som börjar på tredje tecknet till slutet av stringen finns namnet på användaren
 	 */
 	private void process(DatagramPacket packet){
@@ -123,11 +123,6 @@ public class Server implements Runnable{
 			System.out.println(" has connected to the server with ID: " + id);
 			clients.add(new ServerClient(
 					string.substring(3, string.length()), packet.getAddress(), packet.getPort(), id));
-			/*
-			for (int i = 0; i < clients.size(); i++){
-				System.out.print(clients.size()+"client: " + clients.get(i).name);
-			}
-			*/
 			String ID = "/c/"+id;
 			send(ID,packet.getAddress(),packet.getPort());
 			
@@ -136,7 +131,9 @@ public class Server implements Runnable{
 			System.out.println("m paket: "+string);
 			sendToAll(string);
 		} else if (string.startsWith("/d/")){
+			//String name = string.substring(3, string.length());
 			String id = string.split("/d/|/e/")[1];
+			System.out.println(id+" har loggat ut.");
 			disconnect(Integer.parseInt(id), true);
 		}
 		

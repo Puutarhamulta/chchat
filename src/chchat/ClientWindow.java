@@ -141,13 +141,18 @@ private void createWindow(){
 		gbc_btnSend.gridy = 2;
 		contentPane.add(btnSend, gbc_btnSend);
 		
+		/*
+		 * När klienten stänger programmet
+		 * 
+		 * FÖNSTRET STÄNGS INTE, FIXA!
+		 */
+		
 		addWindowListener(new WindowAdapter(){
 			public void windowClosing(WindowEvent e){
 				String disconnect = "/d/"+client.getID()+"/e/";
 				send(disconnect, false);
 				running = false;
 				client.close();
-				System.out.println("closed");
 			}
 		});
 		
